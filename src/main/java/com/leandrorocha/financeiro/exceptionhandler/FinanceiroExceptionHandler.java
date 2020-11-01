@@ -21,32 +21,30 @@ public class FinanceiroExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@Autowired
 	private MessageSource messageSource;
-	
+
 	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
-		
+
 		String mensagemUsuario = messageSource.getMessage("mensagem.invalida", null, LocaleContextHolder.getLocale());
 		String mensagemDesenvoldedor = ex.getCause().toString();
-		return handleExceptionInternal(ex, new Erro(mensagemUsuario, mensagemDesenvoldedor), headers, HttpStatus.BAD_REQUEST, request);
+		return handleExceptionInternal(ex, new Erro(mensagemUsuario, mensagemDesenvoldedor), headers,
+				HttpStatus.BAD_REQUEST, request);
 	}
-	
-	@ExceptionHandler({EmptyResultDataAccessException.class})
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void handleEmptyResultDataAccessException(RuntimeException ex) {
-		/*
-		 * String mensagemUsuario = messageSource.getMessage("mensagem.naoexiste", null,
-		 * LocaleContextHolder.getLocale()); String mensagemDesenvoldedor =
-		 * ex.getCause().toString(); return handleExceptionInternal(ex, new
-		 * Erro(mensagemUsuario, mensagemDesenvoldedor), null, HttpStatus.NOT_FOUND,
-		 * null);
-		 */
+
+	@ExceptionHandler({ EmptyResultDataAccessException.class })
+	public ResponseEntity<Object> handleEmptyResultDataAccessException(RuntimeException ex, WebRequest request) {
+		
+		  String mensagemUsuario = messageSource.getMessage("mensagem.naoencontrado", null,LocaleContextHolder.getLocale()); 
+		  String mensagemDesenvoldedor = ex.toString(); 
+		  
+		  return handleExceptionInternal(ex, new Erro(mensagemUsuario, mensagemDesenvoldedor), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
 	}
-	
-	public static class Erro{
+
+	public static class Erro {
 		private String mensagemUsuario;
 		private String mensagemDesenvolvedor;
-		
+
 		public Erro(String mensagemUsuario, String mensagemDesevolvedor) {
 			this.mensagemUsuario = mensagemUsuario;
 			this.mensagemDesenvolvedor = mensagemDesevolvedor;
