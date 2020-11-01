@@ -6,11 +6,15 @@ import java.util.Optional;
 
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +43,7 @@ public class ContaController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Conta> inserir(@RequestBody Conta conta, HttpServletResponse response) {
+	public ResponseEntity<Conta> inserir(@Valid @RequestBody Conta conta) {
 		Conta contaSalva =  repository.save(conta);
 		
 		URI uri = ServletUriComponentsBuilder
@@ -60,14 +64,14 @@ public class ContaController {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Conta> atualizar(@PathVariable Long id, Conta atualizacao){
+	public ResponseEntity<Conta> atualizar(@PathVariable Long id,@Valid @RequestBody Conta atualizacao){
 		
 		Conta conta = repository.findById(id).orElse(null);
 		if(conta==null) {
-			//ResponseEntity.badRequest().body("Essa conta não existe, então não pode ser alteradada");
-			return ResponseEntity.notFound().build();
+			//return ResponseEntity.notFound().build();
+			throw new EmptyResultDataAccessException(1); 
 		}
-		conta.setNome(atualizacao.getNome());
+		BeanUtils.copyProperties(atualizacao, conta, "id");
 		repository.save(conta);
 		
 		return ResponseEntity.accepted().body(conta);
