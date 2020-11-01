@@ -22,52 +22,52 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.leandrorocha.financeiro.event.RecursoCriadoEvent;
-import com.leandrorocha.financeiro.model.Conta;
-import com.leandrorocha.financeiro.repository.ContaRepository;
+import com.leandrorocha.financeiro.model.Lancamento;
+import com.leandrorocha.financeiro.repository.LancamentoRepository;
 
 
 @RestController
-@RequestMapping("/contas")
-public class ContaController {
+@RequestMapping("/lancamentos")
+public class LancamentoController {
 
 	@Autowired
-	private ContaRepository repository;
+	private LancamentoRepository repository;
 	
 	@Autowired
 	private ApplicationEventPublisher publisher;
 
 	@GetMapping
-	public List<Conta> listarTodos(){
+	public List<Lancamento> listarTodos(){
 		return repository.findAll();
 	}
 	
 	@PostMapping
-	public ResponseEntity<Conta> inserir(@Valid @RequestBody Conta conta, HttpServletResponse response) {
-		Conta contaSalva =  repository.save(conta);
+	public ResponseEntity<Lancamento> inserir(@Valid @RequestBody Lancamento lancamento, HttpServletResponse response) {
+		Lancamento lancamentoSalvo = repository.save(lancamento);
 		
-		publisher.publishEvent(new RecursoCriadoEvent(this, response, contaSalva.getId()));
+		publisher.publishEvent(new RecursoCriadoEvent(this, response, lancamentoSalvo.getId()));
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(contaSalva);
+		return ResponseEntity.status(HttpStatus.CREATED).body(lancamentoSalvo);
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Conta> pesquisaPorID(@PathVariable Long id) {
-		Conta conta = repository.findById(id).orElse(null);
-		return conta != null ? ResponseEntity.ok().body(conta) : ResponseEntity.notFound().build();
+	public ResponseEntity<Lancamento> pesquisaPorID(@PathVariable Long id) {
+		Lancamento lancamento = repository.findById(id).orElse(null);
+		return lancamento != null ? ResponseEntity.ok().body(lancamento) : ResponseEntity.notFound().build();
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Conta> atualizar(@PathVariable Long id,@Valid @RequestBody Conta atualizacao){
+	public ResponseEntity<Lancamento> atualizar(@PathVariable Long id,@Valid @RequestBody Lancamento atualizacao){
 		
-		Conta conta = repository.findById(id).orElse(null);
-		if(conta==null) {
+		Lancamento lancamento = repository.findById(id).orElse(null);
+		if(lancamento==null) {
 			//return ResponseEntity.notFound().build();
 			throw new EmptyResultDataAccessException(1); 
 		}
-		BeanUtils.copyProperties(atualizacao, conta, "id");
-		repository.save(conta);
+		BeanUtils.copyProperties(atualizacao, lancamento, "id");
+		repository.save(lancamento);
 		
-		return ResponseEntity.accepted().body(conta);
+		return ResponseEntity.accepted().body(lancamento);
 		
 	}
 	
