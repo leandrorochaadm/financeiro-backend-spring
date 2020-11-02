@@ -44,6 +44,7 @@ public class Conta {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "conta")
 	private List<Transacao> transacao;
 
+	@NotNull
 	@Enumerated(EnumType.STRING)
 	private TipoConta tipo;
     

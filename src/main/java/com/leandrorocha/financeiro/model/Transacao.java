@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,6 +24,8 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "transacao")
+@Getter
+@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @ToString
@@ -30,20 +34,20 @@ public class Transacao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    @Getter
     private Long id;
     
-    @Getter @Setter
     @NotNull
 	@ManyToOne
 	private Conta conta;
     
 	@NotNull
-	@Getter
-	@Setter
 	@Column(precision = 10, scale = 3)
 	@JsonDeserialize(using = BigDecimalDeserializer.class)
 	private BigDecimal valor;
+	
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	private TipoTransacao tipo;
     
 
 }
