@@ -53,7 +53,7 @@ public class TransacaoController {
 		if (conta == null) {
 			throw new EmptyResultDataAccessException(1);
 		}
-		Transacao transacaoSalvo = repository.save(transacao);
+		Transacao transacaoSalvo = repository.insert(transacao);
 		
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, transacaoSalvo.getId()));
 		return ResponseEntity.status(HttpStatus.CREATED).body(transacaoSalvo);
@@ -61,20 +61,25 @@ public class TransacaoController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Transacao> pesquisaPorID(@PathVariable Long id) {
-		Transacao transacao = repository.findById(id).orElse(null);
+		Transacao transacao = repository.findById(id);
 		return transacao != null ? ResponseEntity.ok().body(transacao) : ResponseEntity.notFound().build();
 	}
 	
+	@GetMapping("/conta/{idConta}")
+	public List<Transacao> listarPorConta(@PathVariable Long idConta) {
+		return repository.findByConta(idConta);
+	}
+
 	@PutMapping("/{id}")
 	public ResponseEntity<Transacao> atualizar(@PathVariable Long id, @Valid @RequestBody Transacao atualizacao) {
 		
-		Transacao transacao = repository.findById(id).orElse(null);
+		Transacao transacao = repository.findById(id);
 		if (transacao == null) {
 			//return ResponseEntity.notFound().build();
 			throw new EmptyResultDataAccessException(1); 
 		}
 		BeanUtils.copyProperties(atualizacao, transacao, "id");
-		repository.save(transacao);
+		repository.update(transacao);
 		
 		return ResponseEntity.accepted().body(transacao);
 		
