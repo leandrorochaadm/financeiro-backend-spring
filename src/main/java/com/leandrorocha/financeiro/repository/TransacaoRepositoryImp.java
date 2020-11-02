@@ -25,7 +25,9 @@ public class TransacaoRepositoryImp implements TransacaoRepository {
 	@Override
 	@Transactional
 	public List<Transacao> findByConta(Long idConta) {
-		return em.createQuery("from transacao where conta = ?", Transacao.class).getResultList();
+		return em.createQuery("from Transacao where conta_id = :idConta", Transacao.class)
+				.setParameter("idConta", idConta)
+				.getResultList();
 	}
 
 	@Override
