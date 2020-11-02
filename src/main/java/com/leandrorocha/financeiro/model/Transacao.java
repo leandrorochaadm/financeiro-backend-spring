@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.NumberDeserializers.BigDecimalDeserializer;
 
@@ -48,6 +49,26 @@ public class Transacao {
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private TipoTransacao tipo;
+
+	@JsonIgnore
+	@ManyToOne
+	private Lancamento lancamento;
+
+	void setValor(BigDecimal value) {
+		valor = value.abs();
+	}
+
+	public BigDecimal getValor() {
+		int fator = 1;
+		if (conta.getTipo() == TipoConta.ATIVO)
+			fator *= -1;
+		if (conta.getTipo() == TipoConta.DESPESA)
+			fator *= -1;
+		if (tipo == TipoTransacao.D)
+			fator *= -1;
+
+		return new BigDecimal(fator).multiply(valor);
+	}
     
 
 }
