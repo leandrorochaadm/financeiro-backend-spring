@@ -1,5 +1,7 @@
 package com.leandrorocha.financeiro.controller;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -46,6 +48,20 @@ public class TransacaoController {
 		return repository.findAll();
 	}
 	
+	@GetMapping("/saldo/{idConta}")
+	public List<Transacao> listarSaldoPorConta(@PathVariable Long idConta) {
+		List<Transacao> listaConta = listarPorConta(idConta);
+		List<Transacao> lista = new ArrayList<Transacao>();
+		BigDecimal saldo = new BigDecimal(0);
+
+		for (Transacao transacao : listaConta) {
+			saldo = saldo.add(transacao.getValor());
+			transacao.setSaldo(saldo);
+			lista.add(transacao);
+		}
+		return lista;
+	}
+
 	@PostMapping
 	public ResponseEntity<Transacao> inserir(@Valid @RequestBody Transacao transacao, HttpServletResponse response) {
 

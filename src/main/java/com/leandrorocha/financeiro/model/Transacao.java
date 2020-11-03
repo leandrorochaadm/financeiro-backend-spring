@@ -46,6 +46,10 @@ public class Transacao {
 	@JsonDeserialize(using = BigDecimalDeserializer.class)
 	private BigDecimal valor;
 	
+	@Column(precision = 10, scale = 3)
+	@JsonDeserialize(using = BigDecimalDeserializer.class)
+	private BigDecimal saldo;
+
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private TipoTransacao tipo;
